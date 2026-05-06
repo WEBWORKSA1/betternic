@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard · BetterNic</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/styles/main.css">
+<link rel="stylesheet" href="/styles/dashboard.css">
+</head>
+<body>
+
+<header class="site-header">
+  <a href="/" class="logo-lockup">
+    <svg width="32" height="32" viewBox="0 0 80 80"><rect width="80" height="80" rx="16" fill="currentColor"/><path d="M26 22 L26 58 M26 22 L46 22 C53 22 56 26 56 31 C56 36 53 39 47 39 L26 39 M26 39 L48 39 C55 39 58 43 58 49 C58 54 55 58 47 58 L26 58" stroke="white" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span class="wordmark">BetterNic</span>
+  </a>
+  <div class="header-user">
+    <span id="user-email">Loading...</span>
+    <button onclick="signOut()" class="btn btn-secondary btn-small">Sign out</button>
+  </div>
+</header>
+
+<div class="dashboard-layout">
+  <aside class="dashboard-sidebar">
+    <a href="#portfolio" class="side-item active" data-view="portfolio">Portfolio</a>
+    <a href="#inquiries" class="side-item" data-view="inquiries">Inquiries <span class="badge-count" id="inq-count">0</span></a>
+    <a href="#leases" class="side-item" data-view="leases">Active leases</a>
+    <a href="#sales" class="side-item" data-view="sales">Sales history</a>
+    <a href="#payouts" class="side-item" data-view="payouts">Payouts</a>
+    <a href="#settings" class="side-item" data-view="settings">Settings</a>
+  </aside>
+
+  <main class="dashboard-main">
+    <!-- Portfolio View -->
+    <div class="dash-view active" id="view-portfolio">
+      <div class="dash-metrics">
+        <div class="metric"><div class="metric-num" id="m-listings">0</div><div class="metric-label">Active listings</div></div>
+        <div class="metric"><div class="metric-num" id="m-inquiries">0</div><div class="metric-label">Open inquiries</div></div>
+        <div class="metric"><div class="metric-num" id="m-payout">$0</div><div class="metric-label">Pending payout</div></div>
+      </div>
+
+      <div class="dash-toolbar">
+        <input type="text" id="portfolio-search" class="form-input" placeholder="Search portfolio" style="max-width: 240px;">
+        <a href="/listing-new.html" class="btn btn-primary">+ Add domain</a>
+      </div>
+
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr><th>Domain</th><th>Price</th><th>Custody</th><th>Status</th><th></th></tr>
+          </thead>
+          <tbody id="portfolio-tbody">
+            <tr><td colspan="5" class="empty-state">Loading your portfolio...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Inquiries View -->
+    <div class="dash-view" id="view-inquiries">
+      <h2 class="view-title">Open inquiries</h2>
+      <div id="inquiries-list" class="inquiry-list">
+        <div class="empty-state">No inquiries yet. They'll appear here when buyers make offers.</div>
+      </div>
+    </div>
+
+    <!-- Active Leases -->
+    <div class="dash-view" id="view-leases">
+      <h2 class="view-title">Active lease-to-own contracts</h2>
+      <div id="leases-list">
+        <div class="empty-state">No active leases yet. Enable LTO on your listings to start.</div>
+      </div>
+    </div>
+
+    <!-- Sales History -->
+    <div class="dash-view" id="view-sales">
+      <h2 class="view-title">Sales history</h2>
+      <div id="sales-list">
+        <div class="empty-state">No sales yet.</div>
+      </div>
+    </div>
+
+    <!-- Payouts -->
+    <div class="dash-view" id="view-payouts">
+      <h2 class="view-title">Payouts</h2>
+      <div class="payout-card">
+        <div class="payout-row"><span>Available balance</span><span class="payout-amount" id="p-available">$0.00</span></div>
+        <div class="payout-row"><span>Pending clearance</span><span class="payout-amount" id="p-pending">$0.00</span></div>
+        <div class="payout-row"><span>Lifetime earnings</span><span class="payout-amount" id="p-lifetime">$0.00</span></div>
+      </div>
+      <button class="btn btn-primary" style="margin-top:1rem;" disabled>Request payout (min $100)</button>
+    </div>
+
+    <!-- Settings -->
+    <div class="dash-view" id="view-settings">
+      <h2 class="view-title">Settings</h2>
+      <div class="settings-card">
+        <h3>Payout method</h3>
+        <p class="settings-hint">Connect Stripe to receive payouts directly to your bank.</p>
+        <button class="btn btn-secondary">Connect Stripe</button>
+      </div>
+      <div class="settings-card">
+        <h3>Profile</h3>
+        <div class="form-row">
+          <label>Display name</label>
+          <input type="text" id="setting-name" class="form-input">
+        </div>
+        <div class="form-row">
+          <label>Public seller profile</label>
+          <select id="setting-public" class="form-input">
+            <option value="false">Private (show "Private seller" on listings)</option>
+            <option value="true">Public (show my display name)</option>
+          </select>
+        </div>
+        <button onclick="saveSettings()" class="btn btn-primary">Save</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/lib/config.js"></script>
+<script src="/lib/api.js"></script>
+<script src="/lib/dashboard.js"></script>
+</body>
+</html>

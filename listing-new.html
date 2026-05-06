@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>List a domain · BetterNic</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/styles/main.css">
+<link rel="stylesheet" href="/styles/dashboard.css">
+</head>
+<body>
+
+<header class="site-header">
+  <a href="/" class="logo-lockup">
+    <svg width="32" height="32" viewBox="0 0 80 80"><rect width="80" height="80" rx="16" fill="currentColor"/><path d="M26 22 L26 58 M26 22 L46 22 C53 22 56 26 56 31 C56 36 53 39 47 39 L26 39 M26 39 L48 39 C55 39 58 43 58 49 C58 54 55 58 47 58 L26 58" stroke="white" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span class="wordmark">BetterNic</span>
+  </a>
+  <div class="header-user">
+    <a href="/dashboard.html" class="btn btn-secondary btn-small">← Back to dashboard</a>
+  </div>
+</header>
+
+<main class="form-page">
+  <div class="form-container">
+    <h1 class="form-page-title">List a new domain</h1>
+    <p class="form-page-sub">It takes about 2 minutes. You don't pay anything until it sells.</p>
+
+    <form id="listing-form" onsubmit="submitListing(event)">
+      <div class="form-row">
+        <label for="domain-input">Domain name</label>
+        <input type="text" id="domain-input" class="form-input" placeholder="example.com" required>
+        <div class="form-hint">Enter the full domain you own (e.g. finova.com)</div>
+      </div>
+
+      <div class="form-grid-2">
+        <div class="form-row">
+          <label for="price-input">Buy it now price (USD)</label>
+          <input type="number" id="price-input" class="form-input" placeholder="28500" required min="100">
+          <div class="form-hint" id="commission-hint">Commission: 5% (under $50K)</div>
+        </div>
+        <div class="form-row">
+          <label for="min-offer">Minimum offer (optional)</label>
+          <input type="number" id="min-offer" class="form-input" placeholder="e.g. 15000">
+          <div class="form-hint">Offers below this are auto-declined</div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label for="tagline-input">Tagline / description</label>
+        <input type="text" id="tagline-input" class="form-input" placeholder="A premium 6-letter brandable for fintech and finance" maxlength="120">
+        <div class="form-hint">One line shown on your domain lander. 120 chars max.</div>
+      </div>
+
+      <div class="form-row">
+        <label for="category-input">Category</label>
+        <select id="category-input" class="form-input">
+          <option value="">Select a category</option>
+          <option value="finance">Finance & Fintech</option>
+          <option value="ai">AI & Machine Learning</option>
+          <option value="crypto">Crypto & Web3</option>
+          <option value="ecommerce">E-commerce</option>
+          <option value="health">Health & Medical</option>
+          <option value="tech">Tech & SaaS</option>
+          <option value="brandable">Generic Brandable</option>
+          <option value="geo">Geographic</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <label>Domain custody</label>
+        <div class="toggle-grid">
+          <label class="toggle-card selected" data-toggle="custody" data-value="parked">
+            <input type="radio" name="custody" value="parked" checked hidden>
+            <div class="toggle-title">Park with BetterNic</div>
+            <div class="toggle-desc">Required for lease-to-own. We host the lander at your domain.</div>
+          </label>
+          <label class="toggle-card" data-toggle="custody" data-value="self">
+            <input type="radio" name="custody" value="self" hidden>
+            <div class="toggle-title">Self-host lander</div>
+            <div class="toggle-desc">Embed our checkout on your own page. No LTO available.</div>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label>Lease-to-own</label>
+        <div class="toggle-grid">
+          <label class="toggle-card selected" data-toggle="lto" data-value="enabled">
+            <input type="radio" name="lto" value="enabled" checked hidden>
+            <div class="toggle-title">Enable LTO</div>
+            <div class="toggle-desc">12-60 month plans. 50% of markup paid to seller.</div>
+          </label>
+          <label class="toggle-card" data-toggle="lto" data-value="disabled">
+            <input type="radio" name="lto" value="disabled" hidden>
+            <div class="toggle-title">BIN only</div>
+            <div class="toggle-desc">Buyers must pay full price upfront.</div>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" onclick="saveDraft()" class="btn btn-secondary">Save as draft</button>
+        <button type="submit" class="btn btn-primary">Publish listing</button>
+      </div>
+    </form>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/lib/config.js"></script>
+<script src="/lib/api.js"></script>
+<script src="/lib/listing-new.js"></script>
+</body>
+</html>

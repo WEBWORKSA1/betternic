@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BetterNic — A better way to buy, sell, and lease domains</title>
+<meta name="description" content="Premium domain marketplace. 5% flat commission. No lock-in. Buy, sell, and lease domains with the lowest commission in the industry.">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/styles/main.css">
+</head>
+<body>
+
+<header class="site-header">
+  <a href="/" class="logo-lockup">
+    <svg width="32" height="32" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect width="80" height="80" rx="16" fill="currentColor"/>
+      <path d="M26 22 L26 58 M26 22 L46 22 C53 22 56 26 56 31 C56 36 53 39 47 39 L26 39 M26 39 L48 39 C55 39 58 43 58 49 C58 54 55 58 47 58 L26 58" stroke="white" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="wordmark">BetterNic</span>
+  </a>
+  <nav class="nav-links">
+    <a href="/browse.html">Browse</a>
+    <a href="/sell.html">Sell</a>
+    <a href="/lease.html">Lease</a>
+    <a href="/pricing.html">Pricing</a>
+  </nav>
+  <div class="header-cta">
+    <a href="/login.html" class="btn btn-secondary">Sign in</a>
+    <a href="/dashboard.html" class="btn btn-primary">List a domain</a>
+  </div>
+</header>
+
+<section class="hero">
+  <h1 class="hero-title">A better way to buy, sell, and lease domains.</h1>
+  <p class="hero-tag">5% flat commission. No lock-in. Built for owners who want it easy.</p>
+  <form class="search-box" onsubmit="handleSearch(event)">
+    <input type="text" id="search-input" placeholder="Search domains, e.g. crypto, ai, finance" autocomplete="off">
+    <button type="submit" class="btn btn-primary">Search</button>
+  </form>
+  <div class="hero-trust">
+    <span>★★★★★ Trusted by domain investors</span>
+    <span class="dot-sep">·</span>
+    <span>Escrow protected</span>
+    <span class="dot-sep">·</span>
+    <span>24h average payout</span>
+  </div>
+</section>
+
+<section class="metrics-band">
+  <div class="metric"><div class="metric-num" id="m-listings">12,400+</div><div class="metric-label">Domains listed</div></div>
+  <div class="metric"><div class="metric-num">5%</div><div class="metric-label">Flat commission</div></div>
+  <div class="metric"><div class="metric-num">24h</div><div class="metric-label">Average payout</div></div>
+  <div class="metric"><div class="metric-num">$0</div><div class="metric-label">Listing fees</div></div>
+</section>
+
+<section class="featured">
+  <div class="section-head">
+    <h2>Featured domains</h2>
+    <a href="/browse.html">View all →</a>
+  </div>
+  <div class="domain-grid" id="featured-grid">
+    <!-- populated by JS -->
+  </div>
+</section>
+
+<section class="value-props">
+  <div class="value-grid">
+    <div class="value-card">
+      <div class="value-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M3 12h18M12 3v18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </div>
+      <h3>Lowest commission in the industry</h3>
+      <p>5% flat. 4% over $50K. 3% over $100K. Compare to Sedo and Afternic at 15-20%.</p>
+    </div>
+    <div class="value-card">
+      <div class="value-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </div>
+      <h3>Lease-to-own that actually works</h3>
+      <p>12 to 60 month payment plans. We hold the domain in escrow. Buyer pays, you get paid out monthly.</p>
+    </div>
+    <div class="value-card">
+      <div class="value-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/><path d="M8 12l3 3 5-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </div>
+      <h3>You stay in control</h3>
+      <p>Self-host your lander or park with us. Bring your own leads at 0%. No exclusivity required.</p>
+    </div>
+  </div>
+</section>
+
+<section class="cta-band">
+  <h2>Start selling in under 2 minutes</h2>
+  <p>List your first domain free. Pay nothing until it sells.</p>
+  <a href="/dashboard.html" class="btn btn-primary btn-large">List a domain →</a>
+</section>
+
+<footer class="site-footer">
+  <div class="footer-grid">
+    <div>
+      <div class="footer-logo">
+        <svg width="24" height="24" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+          <rect width="80" height="80" rx="16" fill="currentColor"/>
+          <path d="M26 22 L26 58 M26 22 L46 22 C53 22 56 26 56 31 C56 36 53 39 47 39 L26 39 M26 39 L48 39 C55 39 58 43 58 49 C58 54 55 58 47 58 L26 58" stroke="white" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>BetterNic</span>
+      </div>
+      <p class="footer-tag">A better way to buy, sell, and lease domains.</p>
+    </div>
+    <div>
+      <h4>Marketplace</h4>
+      <a href="/browse.html">Browse domains</a>
+      <a href="/lease.html">Lease to own</a>
+      <a href="/categories.html">Categories</a>
+    </div>
+    <div>
+      <h4>Sellers</h4>
+      <a href="/sell.html">List a domain</a>
+      <a href="/pricing.html">Commission rates</a>
+      <a href="/dashboard.html">Seller dashboard</a>
+    </div>
+    <div>
+      <h4>Company</h4>
+      <a href="/about.html">About</a>
+      <a href="/terms.html">Terms</a>
+      <a href="/privacy.html">Privacy</a>
+      <a href="/contact.html">Contact</a>
+    </div>
+  </div>
+  <div class="footer-bottom">© 2026 BetterNic. All rights reserved.</div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/lib/config.js"></script>
+<script src="/lib/api.js"></script>
+<script src="/lib/home.js"></script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign in · BetterNic</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/styles/main.css">
+<link rel="stylesheet" href="/styles/auth.css">
+</head>
+<body class="auth-body">
+
+<div class="auth-wrap">
+  <a href="/" class="auth-logo">
+    <svg width="40" height="40" viewBox="0 0 80 80"><rect width="80" height="80" rx="16" fill="currentColor"/><path d="M26 22 L26 58 M26 22 L46 22 C53 22 56 26 56 31 C56 36 53 39 47 39 L26 39 M26 39 L48 39 C55 39 58 43 58 49 C58 54 55 58 47 58 L26 58" stroke="white" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span>BetterNic</span>
+  </a>
+
+  <div class="auth-card">
+    <h1 class="auth-title" id="auth-title">Sign in</h1>
+    <p class="auth-sub" id="auth-sub">Welcome back. Sign in to manage your domains.</p>
+
+    <form id="auth-form" onsubmit="handleAuth(event)">
+      <div class="form-row">
+        <label>Email</label>
+        <input type="email" id="auth-email" class="form-input" required>
+      </div>
+      <div class="form-row">
+        <label>Password</label>
+        <input type="password" id="auth-password" class="form-input" required minlength="8">
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;" id="auth-submit">Sign in</button>
+      <div id="auth-error" class="auth-error"></div>
+    </form>
+
+    <div class="auth-toggle">
+      <span id="toggle-text">New to BetterNic?</span>
+      <a href="#" onclick="toggleMode(event)" id="toggle-link">Create an account</a>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/lib/config.js"></script>
+<script src="/lib/api.js"></script>
+<script src="/lib/auth.js"></script>
+</body>
+</html>
