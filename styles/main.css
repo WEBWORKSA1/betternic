@@ -448,3 +448,113 @@ select.form-input { padding-right: 32px; }
   .form-grid-2 { grid-template-columns: 1fr; }
   .toggle-grid { grid-template-columns: 1fr; }
 }
+
+/* ================ Payment Methods (NEW v2) ================ */
+
+.form-section {
+  margin-bottom: 2.5rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--color-border);
+}
+.form-section:last-of-type { border-bottom: none; }
+.form-section-h {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+.form-section-sub {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin-bottom: 1.25rem;
+  line-height: 1.6;
+}
+
+.payment-method-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.15s;
+  margin-bottom: 8px;
+  background: var(--color-surface);
+}
+.payment-method-card:hover { border-color: var(--color-border-strong); }
+.payment-method-card.selected {
+  border: 2px solid var(--color-text);
+  padding: 13px 15px;
+}
+.payment-method-card input[type="checkbox"] {
+  margin-top: 3px;
+  accent-color: var(--color-text);
+  cursor: pointer;
+}
+.pmc-content { flex: 1; }
+.pmc-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.pmc-name {
+  font-size: 14px;
+  font-weight: 500;
+}
+.pmc-badge {
+  font-size: 10px;
+  font-weight: 500;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  background: var(--color-success-bg);
+  color: var(--color-success);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.pmc-desc {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+  margin-bottom: 6px;
+}
+.pmc-meta {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+.form-callout {
+  margin-top: 1.5rem;
+  padding: 12px 14px;
+  background: var(--color-info-bg);
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--color-text);
+}
+.form-callout strong { color: var(--color-info); }
+
+/* ================ Lander: accepted methods strip ================ */
+
+.accepted-methods {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 1.5rem;
+  padding: 8px 14px;
+  background: var(--color-surface-alt);
+  border-radius: 999px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+.am-label {
+  font-weight: 500;
+  color: var(--color-text);
+}

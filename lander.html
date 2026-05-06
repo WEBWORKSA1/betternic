@@ -52,6 +52,12 @@
         Money-back guarantee
       </span>
     </div>
+
+    <!-- NEW: Accepted payment methods strip -->
+    <div class="accepted-methods" id="accepted-methods-strip" style="display:none;">
+      <span class="am-label">Accepted:</span>
+      <span id="accepted-methods-list"></span>
+    </div>
   </section>
 
   <section class="lander-features">
@@ -109,6 +115,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/lib/config.js"></script>
+<script src="/lib/payment-options.js"></script>
 <script src="/lib/api.js"></script>
 <script src="/lib/lander.js"></script>
 </body>

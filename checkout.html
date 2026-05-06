@@ -27,36 +27,19 @@
   <div class="checkout-grid">
     <div class="checkout-left">
       <h2 class="checkout-section-h">Choose your payment method</h2>
+      <p class="checkout-section-sub" id="seller-method-note">The seller of this domain accepts the following methods.</p>
 
-      <label class="payment-option selected" data-method="stripe">
-        <input type="radio" name="payment" value="stripe" checked hidden>
-        <div class="po-content">
-          <div class="po-title">Stripe · Card or bank wire</div>
-          <div class="po-desc">Recommended for transactions under $5,000 · 2.9% + $0.30</div>
-        </div>
-        <div class="po-check"></div>
-      </label>
+      <div id="payment-options-list">
+        <!-- Populated by checkout.js based on seller's accepted methods -->
+      </div>
 
-      <label class="payment-option" data-method="escrow">
-        <input type="radio" name="payment" value="escrow" hidden>
-        <div class="po-content">
-          <div class="po-title">Escrow.com</div>
-          <div class="po-desc">Industry-standard escrow for large deals · 3.25%</div>
-        </div>
-        <div class="po-check"></div>
-      </label>
-
-      <label class="payment-option" data-method="wire">
-        <input type="radio" name="payment" value="wire" hidden>
-        <div class="po-content">
-          <div class="po-title">Wire transfer</div>
-          <div class="po-desc">For deals over $25,000 · Manual processing within 24h</div>
-        </div>
-        <div class="po-check"></div>
-      </label>
+      <!-- Custom instructions display (only if seller has custom set) -->
+      <div id="custom-instructions-display" class="custom-instructions-box" style="display:none;">
+        <h3 class="ci-title">Custom payment instructions from seller</h3>
+        <div class="ci-content" id="ci-content"></div>
+      </div>
 
       <h2 class="checkout-section-h" id="lto-section-title" style="display:none;">Or pay over time</h2>
-
       <div id="lto-options"></div>
 
       <div class="contact-block">
@@ -76,7 +59,7 @@
       <h3 class="summary-title">Order summary</h3>
       <div class="summary-row"><span>Domain</span><span id="s-domain">—</span></div>
       <div class="summary-row"><span>Price</span><span id="s-price">$0</span></div>
-      <div class="summary-row"><span>Processing</span><span id="s-fee">$0</span></div>
+      <div class="summary-row"><span id="s-fee-label">Processing</span><span id="s-fee">$0</span></div>
       <div class="summary-divider"></div>
       <div class="summary-total"><span>Total</span><span id="s-total">$0</span></div>
       <button onclick="completePurchase()" class="btn btn-primary" style="width:100%;margin-top:1rem;">Complete purchase</button>
@@ -87,6 +70,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/lib/config.js"></script>
+<script src="/lib/payment-options.js"></script>
 <script src="/lib/api.js"></script>
 <script src="/lib/checkout.js"></script>
 </body>
