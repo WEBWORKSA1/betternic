@@ -1,153 +1,61 @@
-# BetterNic — Phase 1 MVP
+# BetterNic
 
-A better way to buy, sell, and lease domains.
+The command center for domain investors: 37 free tools, daily auction and industry intelligence, and a 5% marketplace.
 
-## What's in here
+## How it runs (fully automatic)
 
-A complete static-HTML domain marketplace, ready to deploy without Node.js or any build step. Edit any file in any text editor — drop the folder on Netlify or Cloudflare Pages — done.
+A GitHub Action (`.github/workflows/daily.yml`) runs every day at 06:17 UTC, and whenever source files change:
 
-## Pages
+1. `scripts/update_data.py` downloads public sources and writes `data/*.json`
+   - GoDaddy Auctions public inventory → scored auction feed (`data/auctions.json`)
+   - Industry RSS feeds → headlines (`data/news.json`)
+   - YouTube channel feeds → videos (`data/videos.json`)
+   - IANA root zone + RDAP bootstrap → `data/tlds.json`, `data/rdap.json`
+   - wordfreq → `data/words.json` (generated on first run; delete it to regenerate)
+   - Every source is isolated; failures keep yesterday's data and are logged in `data/status.json`.
+2. `scripts/make_images.py` renders brand PNGs with headless Chrome if any are missing.
+3. `scripts/build.py` renders every page into `public/` (home, 37 tool pages, marketplace, Daily Brief with a 30-day archive, news, videos, learn, legal, sitemap.xml, feed.xml, ads.txt).
+4. The Action commits the result, which triggers a Netlify deploy.
 
-| Page | What it does |
-|------|---|
-| `index.html` | Marketplace homepage — search, featured domains, value props |
-| `lander.html` | Domain for-sale page (the conversion-critical page) |
-| `dashboard.html` | Seller dashboard — portfolio, inquiries, payouts |
-| `listing-new.html` | Add a new listing |
-| `checkout.html` | Buyer checkout — Stripe / Escrow / Wire / LTO |
-| `browse.html` | All domains with filters and sort |
-| `login.html` | Sign in / sign up |
+Netlify also builds on its own: every deploy runs `scripts/netlify_build.py` (installs wordfreq + Pillow, renders images, refreshes data unless the Action did so in the last 20 hours, then runs `build.py`). So the site is complete and current on every deploy, and the Action adds the guaranteed daily refresh plus the 30-day Daily Brief archive.
 
-## Stack
+### Activating the daily schedule
 
-- **Frontend**: Vanilla HTML + CSS + JS. Zero build step. Edit anywhere.
-- **Backend**: Supabase (Postgres + Auth + RLS)
-- **Payments**: Stripe + Escrow.com (escrow-agnostic at checkout)
-- **Hosting**: Static — deploy to Netlify, Cloudflare Pages, GitHub Pages, anywhere
+GitHub only lets workflow files be added by an account with the `workflow` permission. If `.github/workflows/daily.yml` is not in the repo yet, add it once: GitHub → **Add file → Create new file** → name it `.github/workflows/daily.yml` → paste the workflow → **Commit**. Then check **Settings → Actions → General → Workflow permissions** is set to **Read and write**. The first run also deletes the retired v1/v2 files listed in `bootstrap.json`.
 
-## Setup (5 minutes)
+## Editing
 
-### 1. Create a Supabase project
-1. Go to https://supabase.com/dashboard
-2. Create a new project (free tier is fine for MVP)
-3. Wait ~2 minutes for it to provision
+| What | Where |
+|---|---|
+| Brand, AdSense ID, top banner, commission tiers, donation links, contest prize, news feeds, YouTube channels | `src/site.py` |
+| Tool copy (intro, steps, FAQs) | `src/tools_a.py`, `src/tools_b.py`, `src/tools_c.py` |
+| Tool behaviour | `assets/tools.js`, `assets/tools2.js`, `assets/appraise.js` (keep `scripts/appraise.py` in sync) |
+| Marketplace, leads, contests, careers, support, advertise, compare | `src/pages.py` |
+| Guides | `src/learn.py` · Glossary, compare list, brand screen: `src/refdata.py` |
+| Privacy, terms, cookies, disclaimer, trademark/copyright | `src/legal.py` |
+| Curated marketplace listings | `data/listings.json` (each listing gets `/d/<slug>.html`) |
 
-### 2. Run the schema
-1. In Supabase, go to **SQL Editor** → **New query**
-2. Copy the entire contents of `supabase-schema.sql`
-3. Paste and click **Run**
-4. Confirm tables created in **Table Editor**
+Add a tool: add an entry to a `src/tools_*.py` list and a `T['slug']` function in `assets/tools2.js`.
 
-### 3. Get your credentials
-1. Go to **Project Settings → API**
-2. Copy your **Project URL** and **anon/public key**
-3. Open `lib/config.js`
-4. Replace `YOUR-PROJECT` and `YOUR-ANON-PUBLIC-KEY` with your values
+## Forms
 
-### 4. Enable email auth
-1. Go to **Authentication → Providers**
-2. Enable **Email** provider
-3. Optionally disable "Confirm email" for faster testing
+All forms are Netlify Forms (`data-netlify="true"`). No email address appears anywhere in the site.
+In Netlify: **Site configuration → Forms → Form notifications → Add notification → Email notification**, choose "Any form", and enter the inbox that should receive submissions.
 
-### 5. Deploy
+Forms: `contact`, `lead`, `sell-listing`, `offer`, `tool-lead`, `financing-waitlist`, `advertise`, `contest-entry`, `career-application`, `donation-pledge`, `newsletter`, `legal-notice`.
 
-**Option A — Netlify (drag and drop)**
-1. Go to https://app.netlify.com/drop
-2. Drag the entire `betternic` folder onto the page
-3. Done. Connect your domain.
+## AdSense
 
-**Option B — Cloudflare Pages**
-1. Push to GitHub (or use Direct Upload)
-2. Cloudflare Pages → Create project → Direct Upload
-3. Connect betternic.com
+- Auto ads script is in the `<head>` of every content page (not on 404 / thank-you).
+- `ads.txt` is generated at the site root.
+- Consent Mode v2 defaults to denied for EEA/UK/CH with a cookie banner; for full EEA compliance also enable Google's certified CMP in AdSense → Privacy & messaging.
 
-**Option C — GitHub Pages**
-1. Push to a GitHub repo
-2. Settings → Pages → Deploy from main branch → /root
-3. Custom domain: betternic.com
-
-## Connecting BetterNic.com
-
-Once deployed:
-1. Add custom domain in your hosting provider
-2. Update DNS at your registrar:
-   - **A record**: @ → hosting IP
-   - **CNAME**: www → your-site.netlify.app (or pages dev URL)
-3. Wait 5-15 min for SSL provisioning
-
-## What's NOT built yet (intentionally — Phase 2+)
-
-These are deliberate Phase 1 cuts, all on the roadmap:
-
-- **Real Stripe/Escrow integration** — UI is wired, server-side webhook handlers come Phase 2 (requires Supabase Edge Functions or a serverless layer)
-- **LTO automation engine** — Phase 2 (Stripe subscriptions + cron job for monthly auto-debits)
-- **Domain custody / DNS automation** — Phase 2 (registrar API integration with Namecheap/Dynadot)
-- **AI lead scoring + chat** — Phase 3
-- **Bulk import** — Phase 3
-- **Public seller profiles** — Phase 4
-- **Afternic/Sedo distribution opt-in** — Phase 5
-
-## Mock mode
-
-If you don't connect Supabase, the site runs on mock data automatically. Useful for showing demos before going live. You'll see 8 sample domains, can browse, and can navigate the full UI flow. Real auth and listing creation require Supabase.
-
-## Commission model (locked in)
-
-- 5% flat under $50K
-- 4% over $50K
-- 3% over $100K
-- 0% on buyer-brought leads (Phase 2 feature)
-
-LTO markup tiers (matches Dan.com's old model):
-- 12 months: 0% markup
-- 24 months: 10%
-- 36 months: 20%
-- 48 months: 25%
-- 60 months: 30%
-
-50% of LTO markup goes to the seller, 50% to BetterNic.
-
-## File structure
+## Local build
 
 ```
-betternic/
-├── index.html              # Marketplace home
-├── lander.html             # Domain for-sale page
-├── dashboard.html          # Seller dashboard
-├── listing-new.html        # Add new listing
-├── checkout.html           # Buyer checkout
-├── browse.html             # Browse all domains
-├── login.html              # Auth
-├── favicon.svg             # B monogram favicon
-├── supabase-schema.sql     # Run this in Supabase SQL editor
-├── styles/
-│   ├── main.css            # Design system
-│   ├── lander.css          # Lander-specific styles
-│   ├── dashboard.css       # Dashboard styles
-│   ├── checkout.css        # Checkout styles
-│   ├── auth.css            # Login/signup styles
-│   └── browse.css          # Browse page styles
-└── lib/
-    ├── config.js           # Supabase config + commission helpers
-    ├── api.js              # All Supabase API calls + mock fallback
-    ├── home.js             # Homepage logic
-    ├── lander.js           # Lander logic
-    ├── dashboard.js        # Dashboard logic
-    ├── listing-new.js      # New listing form
-    ├── checkout.js         # Checkout flow
-    ├── browse.js           # Browse + filter logic
-    └── auth.js             # Login/signup
+python3 scripts/update_data.py   # needs internet
+python3 scripts/build.py
+python3 -m http.server -d public 8080
 ```
 
-## Brand
-
-- **Name**: BetterNic
-- **Domain**: BetterNic.com
-- **Tagline**: A better way to buy, sell, and lease domains.
-- **Colors**: Black (#0A0A0A) + warm white (#FAFAFA), green for success, blue for info
-- **Typography**: Inter, weight 500 max
-- **Logo**: B monogram in rounded square
-
----
-
-Built by Web. Ready to ship.
+`supabase-schema.sql` (repo root, not published) is kept for the future account system.

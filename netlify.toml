@@ -1,0 +1,68 @@
+# BetterNic — Netlify config. Every deploy runs scripts/netlify_build.py (fresh data + full build into /public).
+# The daily GitHub Action (.github/workflows/daily.yml) refreshes data, commits it, and that commit triggers a new deploy.
+[build]
+  publish = "public"
+  command = "python3 scripts/netlify_build.py"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Frame-Options = "SAMEORIGIN"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+
+[[headers]]
+  for = "/data/*"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
+    Access-Control-Allow-Origin = "*"
+
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# Old v1/v2 URLs
+[[redirects]]
+  from = "/browse.html"
+  to = "/marketplace.html"
+  status = 301
+[[redirects]]
+  from = "/lander.html"
+  to = "/domain.html"
+  status = 301
+[[redirects]]
+  from = "/checkout.html"
+  to = "/domain.html"
+  status = 301
+[[redirects]]
+  from = "/listing-new.html"
+  to = "/sell.html"
+  status = 301
+[[redirects]]
+  from = "/dashboard.html"
+  to = "/tools/portfolio-tracker.html"
+  status = 301
+[[redirects]]
+  from = "/login.html"
+  to = "/sell.html"
+  status = 301
+[[redirects]]
+  from = "/lease.html"
+  to = "/tools/lease-to-own-calculator.html"
+  status = 301
+[[redirects]]
+  from = "/categories.html"
+  to = "/marketplace.html"
+  status = 301
+[[redirects]]
+  from = "/auctions"
+  to = "/tools/domain-auctions.html"
+  status = 301

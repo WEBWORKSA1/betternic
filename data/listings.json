@@ -1,0 +1,4 @@
+{
+  "_help": "Curated marketplace listings. Add one object per domain to items and commit; the daily build publishes /d/<slug>.html for each. Fields: domain (required), price (USD number or null for make-offer), tagline, category, lto (true/false), payment_methods (list of method names from src/site.py), active (true/false).",
+  "items": []
+}
