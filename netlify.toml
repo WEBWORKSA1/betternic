@@ -1,8 +1,8 @@
-# BetterNic — Netlify config. Every deploy runs scripts/netlify_build.py (fresh data + full build into /public).
+# BetterNic — Netlify config. Every deploy runs scripts/deploy_build.py (fresh data + full build into /public).
 # The daily GitHub Action (.github/workflows/daily.yml) refreshes data, commits it, and that commit triggers a new deploy.
 [build]
   publish = "public"
-  command = "python3 scripts/netlify_build.py"
+  command = "python3 scripts/deploy_build.py"
 
 [[headers]]
   for = "/*"
