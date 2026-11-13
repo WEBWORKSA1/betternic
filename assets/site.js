@@ -117,7 +117,31 @@
     b.addEventListener('click', function () { if (consent) consent.hidden = false; });
   });
 
-  /* ---------- forms (Netlify) ---------- */
+  /* ---------- forms (Web3Forms on any host, Netlify Forms as fallback) ---------- */
+  var formsCfg = null;
+  function formsConfig() {
+    if (!formsCfg) formsCfg = fetch('/data/forms.json?v=' + build, { cache: 'no-cache' })
+      .then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; });
+    return formsCfg;
+  }
+  function sendForm(fields) {
+    return formsConfig().then(function (cfg) {
+      if (cfg.provider === 'web3forms' && cfg.key) {
+        if (fields.company_site) return true; /* honeypot filled: drop silently */
+        var payload = { access_key: cfg.key, from_name: 'BetterNic website',
+          subject: 'BetterNic: ' + (fields['form-name'] || 'form') + (fields.domain ? ' — ' + fields.domain : '') };
+        Object.keys(fields).forEach(function (k) { if (k !== 'company_site') payload[k] = fields[k]; });
+        return fetch('https://api.web3forms.com/submit', { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(payload) })
+          .then(function (r) {
+            return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok || j.success === false) throw new Error(j.message || r.status); return true; });
+          });
+      }
+      var body = new URLSearchParams();
+      Object.keys(fields).forEach(function (k) { body.append(k, fields[k]); });
+      return fetch('/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: body.toString() })
+        .then(function (r) { if (!r.ok) throw new Error(r.status); return true; });
+    });
+  }
   function prefill(f) {
     var page = f.querySelector('input[name=page]'); if (page) page.value = location.pathname + location.search;
     ['d', 'domain', 'intent', 'role', 'price', 'package'].forEach(function (k) {
@@ -136,14 +160,11 @@
       ev.preventDefault();
       var status = f.querySelector('.form-status'), btn = f.querySelector('button[type=submit]');
       if (!f.checkValidity()) { f.reportValidity(); return; }
-      var fd = new FormData(f), body = new URLSearchParams();
-      var multi = {};
+      var fd = new FormData(f), multi = {};
       fd.forEach(function (v, k) { if (multi[k] !== undefined) multi[k] += ', ' + v; else multi[k] = v; });
-      Object.keys(multi).forEach(function (k) { body.append(k, multi[k]); });
       btn.disabled = true; status.className = 'form-status'; status.textContent = 'Sending…';
-      fetch('/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: body.toString() })
-        .then(function (r) {
-          if (!r.ok) throw new Error(r.status);
+      sendForm(multi)
+        .then(function () {
           status.className = 'form-status ok'; status.textContent = f.getAttribute('data-success');
           f.reset(); prefill(f);
           f.querySelectorAll('.step').forEach(function (s, i) { s.classList.toggle('on', i === 0); });
@@ -151,7 +172,7 @@
         })
         .catch(function () {
           status.className = 'form-status err';
-          status.innerHTML = 'We couldn’t send that just now. Please try again, or use the contact link at the very top of the page.';
+          status.textContent = 'We couldn’t send that just now. Please try again, or use the contact link at the very top of the page.';
         })
         .finally(function () { btn.disabled = false; });
     });

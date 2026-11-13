@@ -15,13 +15,21 @@ A GitHub Action (`.github/workflows/daily.yml`) runs every day at 06:17 UTC, and
    - Every source is isolated; failures keep yesterday's data and are logged in `data/status.json`.
 2. `scripts/make_images.py` renders brand PNGs with headless Chrome if any are missing.
 3. `scripts/build.py` renders every page into `public/` (home, 37 tool pages, marketplace, Daily Brief with a 30-day archive, news, videos, learn, legal, sitemap.xml, feed.xml, ads.txt).
-4. The Action commits the result, which triggers a Netlify deploy.
+4. The Action commits the result, which triggers a new deploy.
 
-Netlify also builds on its own: every deploy runs `scripts/netlify_build.py` (installs wordfreq + Pillow, renders images, refreshes data unless the Action did so in the last 20 hours, then runs `build.py`). So the site is complete and current on every deploy, and the Action adds the guaranteed daily refresh plus the 30-day Daily Brief archive.
+## Hosting
 
-### Activating the daily schedule
+Works on **Vercel** (`vercel.json`) or **Netlify** (`netlify.toml`). Every deploy runs `scripts/deploy_build.py`: it restores yesterday's data and the Daily Brief archive from the live site, installs wordfreq + Pillow, renders images, refreshes data (unless refreshed in the last 6 hours), builds `public/`, and writes `public/data/forms.json`.
 
-GitHub only lets workflow files be added by an account with the `workflow` permission. If `.github/workflows/daily.yml` is not in the repo yet, add it once: GitHub → **Add file → Create new file** → name it `.github/workflows/daily.yml` → paste the workflow → **Commit**. Then check **Settings → Actions → General → Workflow permissions** is set to **Read and write**. The first run also deletes the retired v1/v2 files listed in `bootstrap.json`.
+Vercel environment variables:
+
+| Variable | Purpose |
+|---|---|
+| `WEB3FORMS_KEY` | Access key from web3forms.com, tied to the owner's inbox. All forms deliver there; the address never appears on the site. |
+| `DEPLOY_HOOK_URL` | Project → Settings → Git → Deploy Hooks (branch `main`). Vercel Cron calls `/api/daily-refresh` daily, which triggers this hook. |
+| `CRON_SECRET` | Any long random string; protects `/api/daily-refresh`. |
+
+Alternatively, the GitHub Action `.github/workflows/daily.yml` (must be added by an account with the `workflow` permission) refreshes and commits data daily; its first run also deletes the retired v1/v2 files listed in `bootstrap.json`.
 
 ## Editing
 
@@ -39,8 +47,8 @@ Add a tool: add an entry to a `src/tools_*.py` list and a `T['slug']` function i
 
 ## Forms
 
-All forms are Netlify Forms (`data-netlify="true"`). No email address appears anywhere in the site.
-In Netlify: **Site configuration → Forms → Form notifications → Add notification → Email notification**, choose "Any form", and enter the inbox that should receive submissions.
+Forms post to Web3Forms when `WEB3FORMS_KEY` is set (any host), otherwise to Netlify Forms. No email address appears anywhere in the site.
+On Netlify without a key: **Site configuration → Forms → Form notifications → Email notification** to the receiving inbox.
 
 Forms: `contact`, `lead`, `sell-listing`, `offer`, `tool-lead`, `financing-waitlist`, `advertise`, `contest-entry`, `career-application`, `donation-pledge`, `newsletter`, `legal-notice`.
 
@@ -53,8 +61,7 @@ Forms: `contact`, `lead`, `sell-listing`, `offer`, `tool-lead`, `financing-waitl
 ## Local build
 
 ```
-python3 scripts/update_data.py   # needs internet
-python3 scripts/build.py
+python3 scripts/deploy_build.py   # needs internet
 python3 -m http.server -d public 8080
 ```
 
