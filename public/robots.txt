@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /thank-you.html
+Disallow: /domain.html
+
+Sitemap: https://betternic.com/sitemap.xml

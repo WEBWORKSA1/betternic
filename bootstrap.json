@@ -1,4 +1,0 @@
-{
-  "note": "One-time cleanup of the v1/v2 static files that the new build replaces. The workflow deletes the paths below and then removes this file.",
-  "delete": ["index.html", "browse.html", "checkout.html", "dashboard.html", "lander.html", "listing-new.html", "login.html", "deploy.sh", "V2-CHANGELOG.md", "CNAME", ".nojekyll", "lib", "styles"]
-}
