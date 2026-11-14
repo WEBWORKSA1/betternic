@@ -11,6 +11,7 @@ import gzip
 import html
 import io
 import json
+import math
 import re
 import sys
 import time
@@ -23,6 +24,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "scripts"))
 from src.site import SITE  # noqa: E402
+from src.refdata import BRANDS  # noqa: E402
 import appraise  # noqa: E402
 
 DATA = ROOT / "data"
@@ -198,6 +200,42 @@ def tlds():
         record("iana:rdap", False, 0, ex)
 
 
+# ------------------------------------------------------------------ content screening
+# HARD: never published (adult, hateful, slurs). SOFT: kept in the full auction list but never featured
+# (Domain of the Day, homepage, Daily Brief), because those spots are editorial and carry ads.
+HARD_SUB = ("porn", "fuck", "nigg", "faggot", "hentai", "xxx", "pedophil", "childsex")
+HARD_WORDS = set("""sex sexy sexcam rape rapist cunt slut sluts whore whores nude nudes naked milf boobs tits anal fetish bdsm
+incest pedo kkk nazi nazis hitler isis jihad cocaine heroin meth escort escorts hooker cum dildo orgy bitch bastard shit
+piss nigga retard tranny spic kike chink wetback raghead dyke""".split())
+HARD_TLDS = {"sex", "porn", "xxx", "adult", "sexy"}
+SOFT_WORDS = set("""jew jews jewish muslim muslims islam islamic christian christ jesus allah hindu sikh buddha buddhist church
+bible quran koran god gods pope black white arab arabs asian african latino gay gays lesbian trans queer trump biden harris
+obama putin democrat republican election vote israel gaza palestine hamas ukraine russia war kill killer murder death dead die
+suicide bomb terror gun guns rifle weapon weapons ammo drug drugs weed cannabis marijuana vape casino bet bets betting poker
+gamble gambling slots dick cock penis vagina dating hookup covid cancer hiv aids abortion racist hate sucks scam fraud hack
+hacker crack nsfw""".split())
+SOFT_TLDS = {"bet", "casino", "poker", "dating", "sucks", "wtf", "gay", "vegas", "lotto", "cam", "porn", "sex", "adult"}
+# Famous marks: never featured (a featured trademark name would invite disputes).
+BRAND_KEYS = {re.sub(r"[^a-z0-9]", "", b.lower()) for b in BRANDS}
+BRAND_LONG = {b for b in BRAND_KEYS if len(b) >= 5}
+BRAND_SHORT = {b for b in BRAND_KEYS if 3 <= len(b) < 5}
+
+
+def screen(sld, tld, words):
+    """Return 'hard', 'soft' or ''."""
+    toks = set(words) | {sld}
+    if tld in HARD_TLDS or any(x in sld for x in HARD_SUB) or toks & HARD_WORDS:
+        return "hard"
+    if tld in SOFT_TLDS or toks & SOFT_WORDS or toks & BRAND_SHORT or any(b in sld for b in BRAND_LONG):
+        return "soft"
+    return ""
+
+
+def value_score(retail):
+    """1-99 score on the same scale as the name score, but from the extension-weighted value estimate."""
+    return max(1, min(99, round((math.log10(max(retail, 1)) - 1.2) / 0.042)))
+
+
 # ------------------------------------------------------------------ auctions
 KEYMAP = {
     "d": ["domainname", "domain", "name", "domain_name"],
@@ -311,7 +349,12 @@ def auctions():
                 parts = dom.split(".")
                 sld, tld = parts[0], ".".join(parts[1:])
                 sc = appraise.appraise(sld, tld)
-                item = {"d": dom, "s": sc["score"], "tl": tld, "n": len(sld)}
+                flag = screen(sld, tld, sc["words"])
+                if flag == "hard":
+                    continue
+                item = {"d": dom, "s": value_score(sc["retail"]), "ns": sc["score"], "tl": tld, "n": len(sld)}
+                if flag:
+                    item["k"] = 1
                 p = _num(_pick(rec, "p"))
                 if p is not None:
                     item["p"] = round(p, 2)

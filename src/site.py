@@ -10,7 +10,7 @@ SITE = {
         "low-commission marketplace to buy, sell and lease domain names."
     ),
     "launch_date": "2026-05-06",
-    "content_date": "2026-11-13",  # bump when static copy changes (sitemap lastmod)
+    "content_date": "2026-11-14",  # bump when static copy changes (sitemap lastmod)
     "locale": "en",
     "twitter": "",
     # Top-of-page enquiry banner (required on every page). Text shown; URL stays inside the link.
@@ -59,8 +59,8 @@ SITE = {
         {"name": "DotWeekly", "url": "https://www.dotweekly.com/feed/"},
         {"name": "Domain Incite", "url": "https://domainincite.com/feed"},
         {"name": "CircleID", "url": "https://circleid.com/rss/topics/domain_names"},
-        {"name": "Morgan Linton", "url": "https://morganlinton.com/feed/"},
-        {"name": "DomainShane", "url": "https://domainshane.com/feed/"},
+        {"name": "TheDomains", "url": "https://www.thedomains.com/feed/"},
+        {"name": "Strategic Revenue", "url": "https://www.strategicrevenue.com/feed/"},
         {"name": "Rick's Blog", "url": "https://www.ricksblog.com/feed/"},
     ],
     # GoDaddy Auctions public inventory files used for the daily auction feed
