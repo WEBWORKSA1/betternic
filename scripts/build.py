@@ -96,6 +96,11 @@ def bid_link(a, cls=""):
     return f'<a{c} href="{e(a["l"])}" target="_blank" rel="noopener nofollow">Bid ↗</a>'
 
 
+def featured(items):
+    """Auction names eligible for editorial spots: not flagged as sensitive, highest BetterNic score first."""
+    return sorted((a for a in items if not a.get("k")), key=lambda a: (-a["s"], a.get("p") or 0))
+
+
 def auction_rows(items):
     return "".join(
         f'<tr><td class="dn"><a href="/tools/domain-report.html?d={e(a["d"])}">{e(a["d"])}</a></td><td class="num">{a["s"]}</td>'
@@ -180,10 +185,9 @@ class Site:
         ]
 
     def dotd(self):
-        items = [a for a in self.auctions.get("items", []) if not re.search(r"[-0-9]", a["d"].split(".")[0])]
+        items = [a for a in featured(self.auctions.get("items", [])) if not re.search(r"[-0-9]", a["d"].split(".")[0])]
         if not items:
             return None
-        items.sort(key=lambda a: (-a["s"], a.get("p") or 0))
         idx = self.date.toordinal() % min(5, len(items))
         return items[idx]
 
@@ -201,8 +205,8 @@ class Site:
                     f'{" · current price " + money(d.get("p")) if d.get("p") is not None else ""}{" · " + str(d.get("b")) + " bids" if d.get("b") else ""}.</p>'
                     f'<div class="tool-actions"><a class="btn btn-primary" href="/tools/domain-report.html?d={e(d["d"])}">Run the report</a>'
                     f'{bid_link(d, "btn btn-ghost")}</div></div>'
-                    f'<div><p class="small">Why it scored well</p><ul class="check-list"><li>{len(d["d"].split(".")[0])} characters, .{e(d["tl"])}</li><li>BetterNic name score {d["s"]}/99</li><li>{"Traffic: " + str(d["t"]) + " visits" if d.get("t") else "Ends " + (d.get("e") or "")[:10]}</li></ul></div></div></section>')
-        top = sorted(self.auctions.get("items", []), key=lambda a: -a["s"])[:8]
+                    f'<div><p class="small">Why it scored well</p><ul class="check-list"><li>{len(d["d"].split(".")[0])} characters, .{e(d["tl"])}</li><li>BetterNic score {d["s"]}/99 (name and extension)</li><li>{"Traffic: " + str(d["t"]) + " visits" if d.get("t") else "Ends " + (d.get("e") or "")[:10]}</li></ul></div></div></section>')
+        top = featured(self.auctions.get("items", []))[:8]
         auc = (f'<div class="table-wrap"><table><thead><tr><th>Domain</th><th class="num">Score</th><th class="num">Price</th><th class="num">Bids</th><th>Ends</th><th></th></tr></thead><tbody>{auction_rows(top)}</tbody></table></div>'
                if top else '<div class="empty">Today\'s auction feed is refreshing.</div>')
         trows = "".join(f'<div class="today-row"><a class="dn" href="/tools/domain-report.html?d={e(a["d"])}">{e(a["d"])}</a><span class="muted">score {a["s"]} · {money(a.get("p"))}</span></div>' for a in top[:4])
@@ -277,7 +281,7 @@ class Site:
                     submit="Get expert help", success="Thanks — a specialist will email you within one business day.")
         auction_note = ""
         if t["slug"] == "domain-auctions" and self.auctions.get("items"):
-            top = sorted(self.auctions["items"], key=lambda a: -a["s"])[:10]
+            top = featured(self.auctions["items"])[:10]
             auction_note = (f'<h2>Today\'s top-scored auctions ({self.date.strftime("%B %-d, %Y")})</h2>'
                             f'<div class="table-wrap"><table><thead><tr><th>Domain</th><th class="num">Score</th><th class="num">Price</th><th class="num">Bids</th><th>Ends</th><th></th></tr></thead><tbody>{auction_rows(top)}</tbody></table></div>')
         body = f"""<div class="wrap">{cr}
@@ -401,7 +405,7 @@ class Site:
         term = GLOSSARY[self.date.toordinal() % len(GLOSSARY)]
         return {"date": self.bd, "auctions": len(a), "ending_today": len(ending), "top_tlds": sorted(tl.items(), key=lambda x: -x[1])[:5],
                 "avg_score": round(sum(x["s"] for x in a) / len(a), 1) if a else None,
-                "top": sorted(a, key=lambda x: -x["s"])[:10], "news": self.news.get("items", [])[:10], "videos": self.videos.get("items", [])[:3],
+                "top": featured(a)[:10], "news": self.news.get("items", [])[:10], "videos": self.videos.get("items", [])[:3],
                 "dotd": self.dotd(), "tool": t_of_day["slug"], "term": term}
 
     def brief_html(self, b, is_today):
@@ -415,7 +419,7 @@ class Site:
         auc = (f'<div class="table-wrap"><table><thead><tr><th>Domain</th><th class="num">Score</th><th class="num">Price</th><th class="num">Bids</th><th>Ends</th><th></th></tr></thead><tbody>{auction_rows(top)}</tbody></table></div>') if top else '<p class="muted">No auction data for this day.</p>'
         stats = "".join(f'<div class="stat"><b>{e(v)}</b><span>{e(l)}</span></div>' for v, l in [
             (f'{b["auctions"]:,}' if b["auctions"] else "—", "Auctions tracked"), (f'{b["ending_today"]:,}', "Ending this day"),
-            (str(b["avg_score"] or "—"), "Average name score"), (str(len(b.get("news") or [])), "Headlines"), (str(len(TOOLS)), "Free tools")])
+            (str(b["avg_score"] or "—"), "Average BetterNic score"), (str(len(b.get("news") or [])), "Headlines"), (str(len(TOOLS)), "Free tools")])
         archive = "".join(f'<a class="chip" href="/brief/{x}.html">{x}</a>' for x in self.brief_dates[:30])
         return f"""<div class="wrap"><nav class="crumbs"><a href="/">Home</a><span class="sep">/</span><a href="/brief/">Daily Brief</a><span class="sep">/</span><span>{b['date']}</span></nav>
 <section class="page-hero"><p class="eyebrow">{'<span class="live-dot"></span> Today · ' if is_today else ''}{d.strftime('%A, %B %-d, %Y')}</p><h1>The BetterNic Daily Brief</h1>
