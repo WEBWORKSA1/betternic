@@ -106,8 +106,8 @@ def news():
     cutoff = NOW - datetime.timedelta(days=45)
     for f in SITE["news_feeds"]:
         try:
-            xml = fetch(f["url"], timeout=40)
-            root = ET.fromstring(xml.encode("utf-8") if isinstance(xml, str) else xml)
+            xml = fetch(f["url"], timeout=40).lstrip().lstrip(chr(0xFEFF)).lstrip()  # some feeds send whitespace before <?xml
+            root = ET.fromstring(xml.encode("utf-8"))
             n = 0
             entries = root.findall(".//item") or root.findall(".//{http://www.w3.org/2005/Atom}entry")
             for it in entries:
